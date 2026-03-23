@@ -23,29 +23,40 @@ const sellerActive = require("../controller/Seller/sellerActive");
 const lottaryActive = require("../controller/LottaryType/LottaryActive");
 const { ticketRateDefine } = require("../controller/ticketRateDefine");
 
+// Seller Routes
 router.post("/addSeller", verifyToken, checkRole("superAdmin", "admin"), upload.single("image"), addSeller);
-router.post("/addClient", verifyToken, checkRole("superAdmin", "admin"), upload.single("image"), addClient);
 router.get("/getseller", verifyToken, checkRole("superAdmin", "admin"), getseller);
+router.post("/toggleSellerActive/:id", verifyToken, checkRole("superAdmin"), sellerActive);
+
+// Client Routes
+router.post("/addClient", verifyToken, checkRole("superAdmin", "admin"), upload.single("image"), addClient);
 router.get("/getclient", verifyToken, checkRole("superAdmin", "admin"), getclient);
 
+// Number & Shift Routes
 router.post("/addNumberToSeller", verifyToken, checkRole("superAdmin", "admin"), addNumberToSeller);
-
+router.post("/deleteNumberToSeller", verifyToken, checkRole("superAdmin", "admin"), deleteNumberToSeller);
 router.post("/shift", verifyToken, checkRole("superAdmin", "admin"), getShiftByQuery);
 
-router.post("/toggleSellerActive/:id", verifyToken, checkRole("superAdmin"), sellerActive);
-router.post("/toggleLottaryActive/:id", verifyToken, checkRole("superAdmin"), lottaryActive);
-
-router.post("/ticketRateDefine",verifyToken,checkRole("superAdmin"),ticketRateDefine)
-
-router.post("/addMiltiAdmin", verifyToken, checkRole("superAdmin"), addMultiAdmin);
+// Lottery Type Routes
 router.post("/addLotteryType", verifyToken, checkRole("superAdmin"), addLotteryType);
 router.put("/updateLotteryType", verifyToken, checkRole("superAdmin"), updateLotteryType);
 router.get("/getlotteryType", verifyToken, checkRole("superAdmin", "admin"), getlotteryType);
-router.post("/deleteNumberToSeller", verifyToken, checkRole("superAdmin", "admin"), deleteNumberToSeller);
+router.post("/toggleLottaryActive/:id", verifyToken, checkRole("superAdmin"), lottaryActive);
+
+// Ticket Rate Routes
+router.post("/ticketRateDefine",verifyToken,checkRole("superAdmin"),ticketRateDefine)
+
+// Admin Routes
+router.post("/addMiltiAdmin", verifyToken, checkRole("superAdmin"), addMultiAdmin);
+
+// Payment Routes
 router.post("/paymentBluePrint", verifyToken, checkRole("superAdmin", "admin"), paymentBluePrint);
 router.post("/paymentDay", verifyToken, checkRole("superAdmin", "admin"), paymentDay);
 router.get("/payments", verifyToken, checkRole("superAdmin", "admin"), getPayments);
 router.get("/previousDatePayments", verifyToken, checkRole("superAdmin", "admin"), getpreviousDate);
+
+// Dashboard Routes
 router.get("/dashboard-stats", verifyToken, checkRole("superAdmin", "admin"), getDashboardStats);
+
 
 module.exports = router;

@@ -215,6 +215,7 @@ const getTotalBill = () => {
 };
 // const todayDue = getTotalBill() - (priviousDatePayments.todayRemaining || 0);
 
+  const apiUrl = import.meta.env.VITE_API_URL.replace('/api', '');
 
   console.log("Total Bill:", getTotalBill());
   const sellerInfo = sellers.find(s => s._id === selectedSeller);
@@ -275,7 +276,8 @@ const getTotalBill = () => {
           {sellerInfo && (
             <div className="mt-4 flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               {sellerInfo.sellerImage && (
-                <img src={sellerInfo.sellerImage} alt={sellerInfo.name} className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
+              
+                <img src={`${apiUrl}/${sellerInfo.sellerImage}`} alt={sellerInfo.name} className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
               )}
               <div>
                 <p className="font-medium text-gray-800">{sellerInfo.name}</p>

@@ -17,6 +17,18 @@ const getDashboardStats = async (req, res) => {
     
     const paymentStats = await Payment.aggregate([
       {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: "$sellerId",
+          latestPayment: { $first: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$latestPayment" }
+      },
+      {
         $group: {
           _id: null,
           totalRevenue: { $sum: "$amountPaid" },
@@ -26,6 +38,12 @@ const getDashboardStats = async (req, res) => {
       }
     ]);
 
+    // console.log("Payment Stats.Bill:", paymentStats.totalBill)
+    // console.log("Payment Stats.Due:", paymentStats.totalDue)
+    // console.log("Payment Stats.totalRevenue:", paymentStats.totalRevenue)
+    // console.log("Payment Stats:", paymentStats)
+
+    // const todayDate = new Date().toISOString().split('T')[0];
     const todayDate = new Date().toISOString().split('T')[0];
     const todayPayments = await Payment.aggregate([
       {
