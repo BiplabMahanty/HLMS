@@ -7,6 +7,10 @@ require("./models/db");
 const bodyParser = require("body-parser");
 const path = require("path");
 
+// // 👇 ADD THESE 2 LINES
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 const sellerRouter=require( "./router/sellerRouter");
 const authRouter = require("./router/authRouter");
 

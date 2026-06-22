@@ -16,6 +16,7 @@ const paymentDay = async (req, res) => {
       today,
 
     } = req.body;
+    console.log("data",req.body)
 
     /* ---------------- SELLER ---------------- */
     const seller = await SellerModel.findById(sellerId);
@@ -75,6 +76,7 @@ const paymentDay = async (req, res) => {
       (morningShift?.sellTickets?.totalNumberAmount || 0) +
       (dayShift?.sellTickets?.totalNumberAmount || 0) +
       (nightShift?.sellTickets?.totalNumberAmount || 0);
+    console.log("total bill ",todayBill)
 
     /* ---------------- PAYMENT ---------------- */
     let payment = await PaymentModel.findOne({
@@ -107,7 +109,7 @@ const paymentDay = async (req, res) => {
     payment.amountHistory.push(amountPaid);
     
     payment.paymentMethod = paymentMethod || payment.paymentMethod;
-    payment.note = note || payment.note;
+    payment.note = payment.note ? `${payment.note}, ${note}` : note;
 
     payment.todayBill = todayBill;
     payment.previousDue = previousDue;

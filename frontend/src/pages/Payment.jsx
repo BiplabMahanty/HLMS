@@ -14,10 +14,12 @@ export default function Payment() {
   const [morningData, setMorningData] = useState(null);
   const [dayData, setDayData] = useState(null);
   const [nightData, setNightData] = useState(null);
-  const [amountPaid, setAmountPaid] = useState('');
+  const [methodCash, setMethodCash] = useState('');
+  const [methodUpi, setMethodUpi] = useState('');
+  // const [methodBankTransfer, setMethodBankTransfer] = useState('');
+  // const [methodCard, setMethodCard] = useState('');
+  // const [methodOther, setMethodOther] = useState('');
   const [vouter, setVouter] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Cash');
-  const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [morningType, setMorningType] = useState("");
   const [dayType, setDayType] = useState("");
@@ -165,6 +167,39 @@ export default function Payment() {
       return;
     }
 
+    const methods = [];
+    const notesParts = [];
+    let totalAmount = 0;
+
+    if (methodCash && Number(methodCash) > 0) {
+      methods.push('Cash');
+      notesParts.push(`Cash: ${methodCash}`);
+      totalAmount += Number(methodCash);
+    }
+    if (methodUpi && Number(methodUpi) > 0) {
+      methods.push('UPI');
+      notesParts.push(`UPI: ${methodUpi}`);
+      totalAmount += Number(methodUpi);
+    }
+    // if (methodBankTransfer && Number(methodBankTransfer) > 0) {
+    //   methods.push('Bank Transfer');
+    //   notesParts.push(`Bank Transfer: ${methodBankTransfer}`);
+    //   totalAmount += Number(methodBankTransfer);
+    // }
+    // if (methodCard && Number(methodCard) > 0) {
+    //   methods.push('Card');
+    //   notesParts.push(`Card: ${methodCard}`);
+    //   totalAmount += Number(methodCard);
+    // }
+    // if (methodOther && Number(methodOther) > 0) {
+    //   methods.push('Other');
+    //   notesParts.push(`Other: ${methodOther}`);
+    //   totalAmount += Number(methodOther);
+    // }
+
+    const paymentMethodStr = methods.join(' and ');
+    const noteStr = notesParts.join(', ');
+
     setLoading(true);
     try {
       const res = await fetchWithAuth('/seller/paymentDay', {
@@ -174,18 +209,21 @@ export default function Payment() {
           typeMorningId: morningTypeId,
           typeDayId: dayTypeId,
           typeNightId: nightTypeId,
-          amountPaid: Number(amountPaid) || 0,
+          amountPaid: totalAmount,
           vouter: Number(vouter) || 0,
-          paymentMethod,
-          note,
-          today:selectedDate,
+          paymentMethod: paymentMethodStr,
+          note: noteStr,
+          today: selectedDate,
         })
       });
 
       showSuccessToast('Payment recorded successfully!');
-      setAmountPaid('');
+      setMethodCash('');
+      setMethodUpi('');
+      // setMethodBankTransfer('');
+      // setMethodCard('');
+      // setMethodOther('');
       setVouter('');
-      setNote('');
       fetchShiftData(); 
       fetchPaymentDetails();
       fecthPriviousDatePayments();
@@ -480,17 +518,61 @@ const getTotalBill = () => {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Amount Paid</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Cash</label>
               <input
                 type="number"
-                value={amountPaid}
-                onChange={(e) => setAmountPaid(e.target.value)}
+                value={methodCash}
+                onChange={(e) => setMethodCash(e.target.value)}
                 placeholder="0"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in UPI</label>
+              <input
+                type="number"
+                value={methodUpi}
+                onChange={(e) => setMethodUpi(e.target.value)}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Bank Transfer</label>
+              <input
+                type="number"
+                value={methodBankTransfer}
+                onChange={(e) => setMethodBankTransfer(e.target.value)}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Card</label>
+              <input
+                type="number"
+                value={methodCard}
+                onChange={(e) => setMethodCard(e.target.value)}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Other</label>
+              <input
+                type="number"
+                value={methodOther}
+                onChange={(e) => setMethodOther(e.target.value)}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div> */}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Voucher</label>
@@ -502,31 +584,24 @@ const getTotalBill = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-              <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Cash">Cash</option>
-                <option value="UPI">UPI</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Card">Card</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Note</label>
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Optional note"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          {/* Payment Summary */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4 border border-blue-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Payment Summary</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 font-medium">Total Amount:</span>
+                <span className="text-xl font-bold text-blue-600">
+                  ₹{(Number(methodCash) || 0) + (Number(methodUpi) || 0) }
+                </span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-blue-200">
+                <span className="text-gray-700 font-medium">Total with Voucher:</span>
+                <span className="text-2xl font-bold text-green-600">
+                  ₹{(Number(methodCash) || 0) + (Number(methodUpi) || 0) + (Number(vouter) || 0)}
+                </span>
+              </div>
             </div>
           </div>
 
